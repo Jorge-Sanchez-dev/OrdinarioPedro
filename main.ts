@@ -9,7 +9,7 @@ import { ContactModel } from "./types.ts";
 const MONGO_URL = Deno.env.get("MONGO_URL");
 
 if (!MONGO_URL) {
-    console.error("❌ Error: La variable de entorno MONGO_URL no está definida.");
+    console.error("Error: La variable de entorno MONGO_URL no está definida.");
     Deno.exit(1);
 }
 
