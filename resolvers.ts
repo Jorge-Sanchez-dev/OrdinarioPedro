@@ -18,12 +18,12 @@ type MutationArgs = {
 
 export const resolvers = {
     Contact: {
-        id: (parent: ContactModel) => parent._id!.toString(),
-        time: async(parent:ContactModel) => await getDateTime(parent.timezone)
+        id: (parent: ContactModel) => parent._id!.toString(), //COnvierte en una cadena de texto
+        time: async(parent:ContactModel) => await getDateTime(parent.timezone) //calcula la hora 
     },
 
     Query: {
-        getContact: async (
+        getContact: async ( //Encontrar a una persona
             _:unknown,
             args: MutationArgs,
             context:Context
@@ -32,7 +32,7 @@ export const resolvers = {
             if(!result) throw new GraphQLError("Contact not found")
             return result;
         },
-        getContacts: async(
+        getContacts: async( //Mostrar a todas las personas
             _:unknown,
             __:unknown,
             context:Context,
@@ -49,7 +49,8 @@ export const resolvers = {
             const {name, phone} = args
             const {country, timezone} = await validatephone(phone)
             const phone_exist = await context.ContactCollection.findOne({phone})
-            if(phone_exist) throw new GraphQLError("Contact already exist")
+            if(phone_exist) throw new GraphQLError("El contacto ya existe")
+
             const {insertedId} = await context.ContactCollection.insertOne({
                 name,
                 phone,
@@ -83,14 +84,14 @@ export const resolvers = {
             const {id, phone} = args
             if(phone){
                 const {country, timezone} = await validatephone(phone)
-                args = {...args, country, timezone}
+                args = {...args, country, timezone} //Copia los valores antiguos
             }
             const phone_exist = await context.ContactCollection.findOne({phone})
             if(phone_exist) throw new GraphQLError("Contact not found")
             const result = await context.ContactCollection.findOneAndUpdate(
                 {_id: new ObjectId(id)},
                 {$set: {...args}},
-                {returnDocument: "after"}
+                //{returnDocument: "after"}
             )
             if(!result) throw new GraphQLError("Contact not found")
             return result
